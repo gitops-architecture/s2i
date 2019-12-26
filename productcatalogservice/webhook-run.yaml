@@ -1,0 +1,25 @@
+apiVersion: tekton.dev/v1alpha1
+kind: TaskRun
+metadata:
+  generateName: create-webhook-run-
+spec:
+  taskRef:
+    name: create-webhook
+  inputs:
+    params:
+    - name: GitHubOrg
+      value: "gitops-architecture"
+    - name: GitHubUser
+      value: "gitops-architecture"
+    - name: GitHubRepo
+      value: "productcatalogservice"
+    - name: GitHubSecretName
+      value: tekton-trigger-secrets
+    - name: GitHubAccessTokenKey
+      value: token
+    - name: GitHubSecretStringKey
+      value: secret
+    - name: ExternalDomain
+      value: ebb18bc8.ngrok.io
+  timeout: 1000s
+  serviceAccountName: build-bot

@@ -1,0 +1,51 @@
+apiVersion: tekton.dev/v1alpha1
+kind: Pipeline
+metadata:
+  name: build-push-update-pipeline
+spec:
+  resources: 
+  - name: source
+    type: git
+  - name: image
+    type: image
+  params:
+    - name: COMMITID
+      description: Gitlab repo commit Id
+    - name: GIT_REPO
+      description: The name of the github (config) repository  
+    - name: GIT_USERNAME
+      description: the username of the github account
+    - name: GIT_EMAIL 
+      description: the email of the git account
+    - name: GIT_ACCESS_TOKEN
+      description: the git access toekn
+  tasks:
+  - name: build-and-push
+    taskRef:
+      name: build-task
+    params:
+      - name: COMMITID
+        value: "$(params.COMMITID)"
+    resources:
+      inputs:
+      - name: source
+        resource: source
+      outputs:
+      - name: image
+        resource: image  
+  - name: update-config-repo
+    taskRef:
+      name: update-task
+    runAfter:
+      - build-and-push
+    params:
+      - name: COMMITID
+        value: "$(params.COMMITID)"
+      - name: GIT_REPO
+        value: "$(params.GIT_REPO)"
+      - name: GIT_USERNAME
+        value: $(params.GIT_USERNAME)
+      - name: GIT_EMAIL 
+        value: $(params.GIT_EMAIL)
+      - name: GIT_ACCESS_TOKEN
+        value: $(params.GIT_ACCESS_TOKEN)

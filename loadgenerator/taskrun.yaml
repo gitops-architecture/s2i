@@ -1,0 +1,21 @@
+apiVersion: tekton.dev/v1alpha1
+kind: TaskRun
+metadata:
+  generateName: loadgenerator-taskrun-
+spec:
+  serviceAccountName: build-bot
+  taskRef:
+    name: loadgenerator-build-task
+  inputs:
+    resources:
+      - name: source
+        resourceRef:
+          name: loadgenerator-git
+    params:
+      - name: COMMITID
+        value: "v0.1.1"
+  outputs:
+    resources:
+      - name: image
+        resourceRef:
+          name: loadgenerator-image

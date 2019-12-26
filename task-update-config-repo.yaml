@@ -1,0 +1,35 @@
+apiVersion: tekton.dev/v1alpha1
+kind: Task
+metadata:
+  name: update-task
+spec:
+  inputs:
+    params:
+    - name: COMMITID
+      description: The github commit Id
+    - name: GIT_REPO
+      description: the name of the (code) repo 
+    - name: VALUES_FILE
+      description: the configuration file for helm chart
+      default: values.yaml
+    - name: GIT_USERNAME
+      description: the username of the github account
+    - name: GIT_EMAIL 
+      description: the email of the git account
+    - name: GIT_ACCESS_TOKEN
+      description: the git access toekn
+  steps:
+  - name: update-config-repo
+    image: peishu/yq-git
+    command:
+      - /bin/sh
+      - -c
+      - | 
+         git config --global user.email $(inputs.params.GIT_EMAIL) 
+         git config --global user.name $(inputs.params.GIT_USERNAME)
+         git clone https://$(inputs.params.GIT_USERNAME):$(inputs.params.GIT_ACCESS_TOKEN)@github.com/$(inputs.params.GIT_USERNAME)/$(inputs.params.GIT_REPO)-config.git
+         cd $(inputs.params.GIT_REPO)-config/$(inputs.params.GIT_REPO)
+         cat $(inputs.params.VALUES_FILE) | yq w - image.tag $(inputs.params.COMMITID)> values2.yaml && mv values2.yaml $(inputs.params.VALUES_FILE)
+         git add . 
+         git commit -m "Image tag updated by the tekton trigger."
+         git push

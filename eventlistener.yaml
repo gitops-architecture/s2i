@@ -1,0 +1,15 @@
+  
+apiVersion: tekton.dev/v1alpha1
+kind: EventListener
+metadata:
+  name: event-listener
+spec:
+  ServiceType: LoadBalancer
+  serviceAccountName: build-bot
+  triggers:
+    - name: tekton-event-trigger
+      interceptor:
+      binding:
+        name: pipeline-binding
+      template:
+        name: pipeline-template

@@ -1,0 +1,65 @@
+apiVersion: tekton.dev/v1alpha1
+kind: TriggerTemplate
+metadata:
+  name: pipeline-template
+spec:
+  params:
+  - name: githubCommitId
+    description: the commit sha
+    default: latest
+  - name: githubUsername
+    description: the github account name
+    default: gitops-architecture
+  - name: githubRepo
+    description: the name of the github code repo
+  - name: githubRevision
+    description: the branch of the git code repo
+  resourcetemplates:
+  - apiVersion: tekton.dev/v1alpha1
+    kind: PipelineResource
+    metadata:
+      name: $(params.githubRepo)-git-$(uid)
+    spec:
+      type: git
+      params:
+      - name: revision
+        value: $(params.githubRevision)
+      - name: url
+        value: https://github.com/$(params.githubUsername)/$(params.githubRepo)
+  - apiVersion: tekton.dev/v1alpha1
+    kind: PipelineResource
+    metadata:
+      name: $(params.githubRepo)-image-$(uid)
+    spec:
+      type: image
+      params:
+      - name: url
+        value: index.docker.io/peishu/$(params.githubRepo)
+  - apiVersion: tekton.dev/v1alpha1
+    kind: PipelineRun
+    metadata:
+      generateName: build-push-update-pipelinerun-
+    spec:
+      serviceAccountName: build-bot
+      pipelineRef:
+        name: build-push-update-pipeline
+      resources:
+        - name: source
+          resourceRef: 
+            name: $(params.githubRepo)-git-$(uid)
+        - name: image
+          resourceRef: 
+            name: $(params.githubRepo)-image-$(uid)
+      params:
+      - name: COMMITID
+        value: $(params.githubCommitId)
+      - name: GIT_REPO
+        value: $(params.githubRepo)
+      - name: GIT_USERNAME
+        value: $(params.githubUsername)
+      - name: GIT_EMAIL 
+        value: $(params.githubEmail)
+      - name: GIT_ACCESS_TOKEN
+        value: $(params.githubAccessToken)
+
+     

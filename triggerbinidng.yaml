@@ -1,0 +1,18 @@
+apiVersion: tekton.dev/v1alpha1
+kind: TriggerBinding
+metadata:
+  name: pipeline-binding
+spec:
+  params:
+  - name: githubCommitId
+    value: $(body.head_commit.id)
+  - name: githubRepo
+    value: $(body.repository.name)
+  - name: githubRevision
+    value: $(body.repository.default_branch)
+  - name: githubUsername
+    value: $(body.repository.owner.login)
+  - name: githubEmail 
+    value: $(body.repository.owner.email)
+  - name: githubAccessToken
+    value: YOUR_GITHUB_ACCESS_TOKEN
