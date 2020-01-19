@@ -20,6 +20,6 @@ spec:
     - name: GitHubSecretStringKey
       value: secret
     - name: ExternalDomain
-      value: c5551b17.ngrok.io #ebb18bc8.ngrok.io
+      value: d485d8bb.ngrok.io
   timeout: 1000s
   serviceAccountName: build-bot
