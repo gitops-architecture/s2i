@@ -2,7 +2,7 @@
 
 This repo contains all Tekton manifests (tasks, a pipeline and a trigger) to implement the CI pipeline in our GitOps Reference Architecture as shown in the following architecture diagram:
 
-![GitOps Reference Architecture](https://user-images.githubusercontent.com/22537533/70003646-6f196880-1529-11ea-9e43-c6d494c71ca7.png)
+![GitOps Reference Architecture](https://user-images.githubusercontent.com/22537533/69929016-26a76f80-1483-11ea-8a59-776f84c48acd.png)
 
 The CI pipeline in the diagram is a **shared** Tekton Pipeline. The _source code repo_ is configured with a _webhook_, and the webhook is wired to a **shared** Tekton trigger which will create a Tekton PipelineRun once triggered (e.g., in response to a git commit or pull request event) and execute the Tekton Pipeline.
 
